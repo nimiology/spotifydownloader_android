@@ -62,7 +62,7 @@ class _PlaylistState extends State<Playlist> {
     getImagePalette(NetworkImage('https://i.scdn.co/image/ab67616d0000b273948ee25ce784ed4d532cc328'));
     return Container(
       width: 500,
-      height: 720,
+      height: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
           bottomRight: Radius.circular(35),

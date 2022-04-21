@@ -13,7 +13,22 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-      ),
+        textTheme: const TextTheme(
+          titleLarge: TextStyle(
+              fontSize: 22.5,
+              color: Colors.white,
+              fontWeight: FontWeight.w900
+          ),
+          titleMedium: TextStyle(
+              fontSize: 18,
+              color: Colors.white,
+              fontWeight: FontWeight.bold
+          ),
+          titleSmall : TextStyle(
+              color: Colors.grey,
+          )
+        ),
+    ),
       home: MyHomePage(),
       debugShowCheckedModeBanner: false,
     );
@@ -44,6 +59,66 @@ class Playlist extends StatefulWidget {
 }
 
 class _PlaylistState extends State<Playlist> {
+  String imageAlbum = 'https://i.scdn.co/image/ab67616d0000b273a3eff72f62782fb589a492f9';
+  List Songs = [
+    {
+      'title': 'Alone Again',
+      'artists' : ['The Weeknd']
+    },
+    {
+      'title': 'Too Late',
+      'artists' : ['The Weeknd']
+    },
+    {
+      'title': 'Hardest To Love',
+      'artists' : ['The Weeknd']
+    },
+    {
+      'title': 'Scared To Live',
+      'artists' : ['The Weeknd']
+    },
+    {
+      'title': 'Snowchild',
+      'artists' : ['The Weeknd']
+    },
+    {
+      'title': 'Escape from LA',
+      'artists' : ['The Weeknd']
+    },
+    {
+      'title': 'Heartless',
+      'artists' : ['The Weeknd']
+    },
+    {
+      'title': 'Faith',
+      'artists' : ['The Weeknd']
+    },
+    {
+      'title': 'Blinding Lights',
+      'artists' : ['The Weeknd']
+    },
+    {
+      'title': 'In Your Eyes',
+      'artists' : ['The Weeknd']
+    },
+    {
+      'title': 'Save Your Tears',
+      'artists' : ['The Weeknd']
+    },
+    {
+      'title': 'Repeat After Me (Interlude)',
+      'artists' : ['The Weeknd']
+    },
+    {
+      'title': 'After Hours',
+      'artists' : ['The Weeknd']
+    },
+    {
+      'title': 'Until I Bleed Out',
+      'artists' : ['The Weeknd']
+    },
+  ];
+
   List<Color> paletteGeneratorColors = [
     Colors.black12,
     Colors.grey,
@@ -59,15 +134,15 @@ class _PlaylistState extends State<Playlist> {
 
   @override
   Widget build(BuildContext context) {
-    getImagePalette(NetworkImage('https://i.scdn.co/image/ab67616d0000b273948ee25ce784ed4d532cc328'));
+    getImagePalette(NetworkImage(imageAlbum));
     return Container(
       width: 500,
       height: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-          bottomRight: Radius.circular(35),
-          bottomLeft: Radius.circular(35),
-        ),
+        // borderRadius: BorderRadius.only(
+        //   bottomRight: Radius.circular(35),
+        //   bottomLeft: Radius.circular(35),
+        // ),
         gradient:  LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -77,17 +152,76 @@ class _PlaylistState extends State<Playlist> {
       child: Column(
         children: [
           Container(
-              width: 175,
-              height: 175,
-              margin: EdgeInsets.all(70),
+              width: 220,
+              height: 220,
+              margin: EdgeInsets.fromLTRB(0, 60, 0, 28),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
                   image: DecorationImage(
                     fit: BoxFit.fitWidth,
-                    image: NetworkImage('https://i.scdn.co/image/ab67616d0000b273948ee25ce784ed4d532cc328'),
+                    image: NetworkImage(imageAlbum),
                   )
               ),
             ),
+          Container(
+              child: Text(
+                'After Hours',
+                style: Theme.of(context).textTheme.titleLarge,)
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 2.5, 0, 50),
+            child: Text(
+              'The Weeknd',
+              style: TextStyle(
+                  color: Colors.grey
+              )
+            )
+          ),
+          Container(
+            width: 400,
+            height: 400,
+            child: ListView.builder(
+                itemCount: Songs.length,
+                itemBuilder: (ctx, index){
+                  String artists = '';
+                  for(int i=0; i<Songs[index]['artists'].length; i++){
+                    artists += Songs[index]['artists'][i];
+                    if (i+1!=Songs[index]['artists'].length){
+                      artists += ', ';
+                    }
+                  }
+                  return Card(
+                    elevation: 0,
+                    color: Colors.white.withOpacity(0.0),
+                    margin: EdgeInsets.symmetric(
+                        vertical: 2.5, horizontal: 5
+                    ),
+                    child: ListTile(
+                      onTap: (){},
+                      title: Text(
+                        Songs[index]['title'],
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      subtitle: Text(artists,
+                        style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                      leading: Container(
+                        child: Text((index+1).toString(),
+                          style: TextStyle(fontSize: 17.5,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700
+                          ),
+                        ),
+                        margin: EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 5
+                        ),
+                      )
+                    ),
+                  );
+                }
+            )
+          ),
         ],
       ),
     );

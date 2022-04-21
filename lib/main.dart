@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Playlist()
+      body: Playlist(),
     );
   }
 }
@@ -120,9 +120,11 @@ class _PlaylistState extends State<Playlist> {
   ];
 
   List<Color> paletteGeneratorColors = [
-    Colors.black12,
+    Colors.black,
     Colors.grey,
   ];
+
+  TextEditingController _textFieldController = TextEditingController();
 
   void getImagePalette (ImageProvider image) async {
     final PaletteGenerator paletteGenerator = await PaletteGenerator.
@@ -132,6 +134,44 @@ class _PlaylistState extends State<Playlist> {
     });
   }
 
+  Future<String?> _showTextInputDialog(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: paletteGeneratorColors[1],
+            title: Container(
+              padding: EdgeInsets.all(0),
+              child: const Text('Spotify Link',
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+              ),
+            ),
+            content: TextField(
+              controller: _textFieldController,
+              decoration: const InputDecoration(
+                hintText: "Enter the link",
+                hintStyle:TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.normal
+                ),
+              ),
+            ),
+            actions: <Widget>[
+              RawMaterialButton(
+                fillColor: paletteGeneratorColors[0],
+                child: const Text('OK', style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.white
+                ),
+                ),
+                onPressed: () => Navigator.pop(context, _textFieldController.text),
+              ),
+            ],
+          );
+        });
+  }
   @override
   Widget build(BuildContext context) {
     getImagePalette(NetworkImage(imageAlbum));
@@ -169,7 +209,7 @@ class _PlaylistState extends State<Playlist> {
                 style: Theme.of(context).textTheme.titleLarge,)
           ),
           Container(
-            margin: EdgeInsets.fromLTRB(0, 2.5, 0, 50),
+            margin: EdgeInsets.fromLTRB(0, 2.5, 0, 20),
             child: Text(
               'The Weeknd',
               style: TextStyle(
@@ -179,8 +219,32 @@ class _PlaylistState extends State<Playlist> {
           ),
           Container(
             width: 400,
-            height: 400,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                RawMaterialButton(
+                  shape: CircleBorder(),
+                  child: Icon(
+                    Icons.download_sharp,
+                    color: paletteGeneratorColors[0],),
+                  onPressed: (){},
+                ),
+                RawMaterialButton(
+                  shape: CircleBorder(),
+                  child: Icon(
+                    Icons.refresh_sharp,
+                    color: paletteGeneratorColors[0],),
+                  onPressed: ()async => _showTextInputDialog(context),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 390,
+            height: 460,
             child: ListView.builder(
+                padding: EdgeInsets.zero,
                 itemCount: Songs.length,
                 itemBuilder: (ctx, index){
                   String artists = '';
@@ -194,7 +258,7 @@ class _PlaylistState extends State<Playlist> {
                     elevation: 0,
                     color: Colors.white.withOpacity(0.0),
                     margin: EdgeInsets.symmetric(
-                        vertical: 2.5, horizontal: 5
+                        vertical: 0, horizontal: 5
                     ),
                     child: ListTile(
                       onTap: (){},
@@ -207,7 +271,7 @@ class _PlaylistState extends State<Playlist> {
                     ),
                       leading: Container(
                         child: Text((index+1).toString(),
-                          style: TextStyle(fontSize: 17.5,
+                          style: TextStyle(fontSize: 17,
                               color: Colors.white,
                               fontWeight: FontWeight.w700
                           ),

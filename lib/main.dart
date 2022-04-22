@@ -3,6 +3,7 @@ import 'package:palette_generator/palette_generator.dart';
 import 'package:spotifydownloader_flutter/widgets/CoverArt.dart';
 import 'package:spotifydownloader_flutter/widgets/IconButtomsUnderTitle.dart';
 import 'package:spotify/spotify.dart';
+import 'package:spotifydownloader_flutter/widgets/SongLists.dart';
 
 
 var credentials = SpotifyApiCredentials('a145db3dcd564b9592dacf10649e4ed5',
@@ -55,22 +56,23 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Playlist(),
+      body: Playlistt(),
     );
   }
 }
 
 
-class Playlist extends StatefulWidget {
+class Playlistt extends StatefulWidget {
 
   @override
-  State<Playlist> createState() => _PlaylistState();
+  State<Playlistt> createState() => _PlaylisttState();
 }
 
-class _PlaylistState extends State<Playlist> {
+class _PlaylisttState extends State<Playlistt> {
   ImageProvider imageAlbum = AssetImage('assets/images/default_artwork.png');
   String title = 'Title';
   String owner = '';
+  List songs = [];
 
 
   List<Color> paletteGeneratorColors = [
@@ -89,13 +91,142 @@ class _PlaylistState extends State<Playlist> {
     });
   }
 
-  Future<Track> getTrack(spotifyLink) async{
-    var track = await spotify.tracks.get(spotifyLink);
-    return track;
+
+  Future trackMapWithTrackSimple(TrackSimple track)async{
+    Map trackMap = {};
+    String? trackName = track.name;
+    if (trackName != null){
+
+      trackMap['title'] = trackName;
+    }
+    List<Artist>? ownerNames = track.artists;
+    if (ownerNames != null){
+      List artists = [];
+      for(Artist artist in ownerNames){
+        if (artist.name != null){
+          artists.add(artist.name.toString());
+        }
+        trackMap['artists'] = artists;
+        trackMap['id'] = track.id;
+      }
+    }
+    return trackMap;
   }
 
-  void changeSpotifyLink(link){
+  void changeSpotifyLink(String link){
+    setState(() async{
+      if (link.startsWith('https://open.spotify.com/track/')){
+        Track track = await spotify.tracks.get(link.substring(31));
+        String? imageUrl =track.album?.images?[1].url;
+        if (imageUrl != null){this.imageAlbum = NetworkImage(imageUrl);}
 
+        Map trackMap = {};
+        String? trackName = track.name;
+        if (trackName != null){
+          this.title = trackName;
+          trackMap['title'] = trackName;
+        }
+        List<Artist>? ownerNames = track.artists;
+        if (ownerNames != null){
+          print(ownerNames);
+          List artists = [];
+          for(Artist artist in ownerNames){
+            if (artist.name != null){
+              print(artist.name.toString());
+              artists.add(artist.name.toString());
+            }
+            trackMap['artists'] = artists;
+            trackMap['id'] = track.id;
+          }
+          if (ownerNames[0].name != null){
+            owner = ownerNames[0].name.toString();
+          }
+        }
+
+        songs = [trackMap];
+      }
+
+      else if (link.startsWith('https://open.spotify.com/album/')){
+        List trackList = [];
+        Album album = await spotify.albums.get(link.substring(31));
+        var tracks = await spotify.albums.getTracks(album.id!).all();
+
+        String? imageUrl = album.images?[1].url;
+        String? title2 = album.name;
+        List? artistalbum = album.artists;
+        if (imageUrl != null){this.imageAlbum = NetworkImage(imageUrl);}
+        if (title2 != null){this.title = title2;}
+        if (artistalbum != null){
+          String artists = '';
+          for(int i=0; i<  artistalbum.length; i++){
+            artists += artistalbum[i].name;
+            if (i+1!=  artistalbum.length){
+              artists += ', ';
+            }
+        }
+          owner = artists;
+        }
+
+        if (tracks != null){
+          for (TrackSimple track in tracks) {
+            Map trackMap = {};
+            String? trackName = track.name;
+            if (trackName != null){
+
+              trackMap['title'] = trackName;
+            }
+            List<Artist>? ownerNames = track.artists;
+            if (ownerNames != null){
+              List artists = [];
+              for(Artist artist in ownerNames){
+                if (artist.name != null){
+                  artists.add(artist.name.toString());
+                }
+                trackMap['artists'] = artists;
+                trackMap['id'] = track.id;
+              }
+            }
+            trackList.add(trackMap);
+          }
+        }
+        songs = trackList;
+      }
+
+      else if (link.startsWith('https://open.spotify.com/playlist/')){
+        List trackList = [];
+        Playlist playlist = await spotify.playlists.get(link.substring(34));
+        Iterable tracks = await spotify.playlists.getTracksByPlaylistId(playlist.id).all();
+
+        String? title2 = playlist.name;
+        String? imageUrl = playlist.images?[0].url;
+        if (imageUrl != null){this.imageAlbum = NetworkImage(imageUrl);}
+        if (title2 != null){this.title = title2;}
+        owner = '';
+        if (tracks != null){
+          for (TrackSimple track in tracks) {
+            Map trackMap = {};
+            String? trackName = track.name;
+            if (trackName != null){
+
+              trackMap['title'] = trackName;
+            }
+            List<Artist>? ownerNames = track.artists;
+            if (ownerNames != null){
+              List artists = [];
+              for(Artist artist in ownerNames){
+                if (artist.name != null){
+                  artists.add(artist.name.toString());
+                }
+                trackMap['artists'] = artists;
+                trackMap['id'] = track.id;
+              }
+            }
+            trackList.add(trackMap);
+          }
+        }
+        songs = trackList;
+      };
+    });
   }
 
   @override
@@ -134,7 +265,7 @@ class _PlaylistState extends State<Playlist> {
               _textFieldController,
               changeSpotifyLink
           ),
-
+          SongsList(songs),
         ],
       ),
     );

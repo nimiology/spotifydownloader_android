@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../models/SongModel.dart';
+
 class SongsList extends StatefulWidget {
   final Songs;
   SongsList(this.Songs);
@@ -32,7 +34,7 @@ class _SongsListState extends State<SongsList> {
                     vertical: 0, horizontal: 5
                 ),
                 child: ListTile(
-                    onTap: (){},
+                    onTap: SongDownload(widget.Songs[index]['id']).download,
                     title: Text(
                       widget.Songs[index]['title'],
                       style: Theme.of(context).textTheme.titleMedium,

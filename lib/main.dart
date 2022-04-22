@@ -45,14 +45,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-
+class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,8 +69,10 @@ class _PlaylisttState extends State<Playlistt> {
 
 
   List<Color> paletteGeneratorColors = [
-    Colors.black,
     Colors.grey,
+    Colors.black,
+    Colors.black,
+
   ];
 
   TextEditingController _textFieldController = TextEditingController();
@@ -260,10 +255,9 @@ class _PlaylisttState extends State<Playlistt> {
             )
           ),
           ButtomIcons(
-              paletteGeneratorColors[0],
-              paletteGeneratorColors[1],
-              _textFieldController,
-              changeSpotifyLink
+            paletteGeneratorColors[0],
+            _textFieldController,
+            changeSpotifyLink
           ),
           SongsList(songs),
         ],

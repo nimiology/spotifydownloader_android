@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'package:flutter_downloader/flutter_downloader.dart';
+
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class SongDownload{
   String id;
@@ -8,14 +9,14 @@ class SongDownload{
   int? idRequest;
   SongDownload(this.id);
 
-  Future download(callback) async{
+  Future download() async{
     int trying = 0;
     http.Response response = await http.get(Uri.parse('http://spotifydownloadernima0.herokuapp.com/${id}'));
     var request = json.decode(response.body);
     idRequest = request['id'];
     if (!request['isDownloaded']){print(request['isDownloaded']);}
 
-    while (!request['isDownloaded']) {
+    while (!request['isDownloaded'] && !request['failed']) {
       print(request);
       if (trying <= 20) {
         await Future.delayed(Duration(seconds: 30));
@@ -28,18 +29,13 @@ class SongDownload{
         break;
       }
     }
-    if (!request['isDownloaded']) {
-      final taskId = await FlutterDownloader.enqueue(
-          url: 'https://spotifydownloadernima0.herokuapp.com${request["slug"]}',
-          savedDir: '/storage/emulated/0/Music',
-          showNotification: true,
-          // show download progress in status bar (for Android)
-          openFileFromNotification: true,
-          // click on notification to open downloaded file (for Android)
-          saveInPublicStorage: true
-      );
-      FlutterDownloader.registerCallback(
-          callback); // callback is a top-level or static function
+    if (request['isDownloaded']) {
+      final url = 'https://spotifydownloadernima0.herokuapp.com${request["slug"]}';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else
+      // can't launch url, there is some error
+      throw "Could not launch $url";
     }
   }
 }

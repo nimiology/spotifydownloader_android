@@ -1,8 +1,4 @@
-import 'dart:isolate';
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:spotifydownloader_flutter/widgets/CoverArt.dart';
 import 'package:spotifydownloader_flutter/widgets/IconButtomsUnderTitle.dart';
@@ -16,10 +12,6 @@ var spotify = SpotifyApi(credentials);
 
 
 void main() async{
-  WidgetsFlutterBinding.ensureInitialized();
-  await FlutterDownloader.initialize(
-      debug: true // optional: set false to disable printing logs to console
-  );
   runApp(MyApp());
 }
 

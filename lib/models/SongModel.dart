@@ -1,47 +1,24 @@
 import 'dart:convert';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:http/http.dart' as http;
-import 'package:dio/dio.dart';
-import 'package:path_provider/path_provider.dart';
 
 class SongDownload{
   String id;
 
   int? idRequest;
   SongDownload(this.id);
-  Dio dio = Dio();
-  double progress = 0.0;
 
-  void startDownloading(String url, String fileSlug) async {
-    String path = await _getFilePath(fileSlug.substring(7));
-
-    await dio.download(
-      url,
-      path,
-      onReceiveProgress: (recivedBytes, totalBytes) {
-      },
-      deleteOnError: true,
-    ).then((_) {});
-  }
-
-  Future<String> _getFilePath(String filename) async {
-    final dir = await getApplicationDocumentsDirectory();
-    print("/storage/emulated/0/Music/$filename");
-    return "/storage/emulated/0/Music/$filename";
-  }
-
-  Future download() async{
+  Future download(callback) async{
     int trying = 0;
     http.Response response = await http.get(Uri.parse('http://spotifydownloadernima0.herokuapp.com/${id}'));
     var request = json.decode(response.body);
-    print(request);
     idRequest = request['id'];
     if (!request['isDownloaded']){print(request['isDownloaded']);}
-    print(request);
 
     while (!request['isDownloaded']) {
       print(request);
-      if (trying <= 10) {
-        await Future.delayed(Duration(minutes: 1));
+      if (trying <= 20) {
+        await Future.delayed(Duration(seconds: 30));
         http.Response requestResponse = await http.get(Uri.parse(
             'https://spotifydownloadernima0.herokuapp.com/request/${idRequest}'));
         request = json.decode(requestResponse.body);
@@ -51,8 +28,18 @@ class SongDownload{
         break;
       }
     }
-    startDownloading('https://spotifydownloadernima0.herokuapp.com${request["slug"]}', request["slug"]);
-    print('done2');
-
+    if (!request['isDownloaded']) {
+      final taskId = await FlutterDownloader.enqueue(
+          url: 'https://spotifydownloadernima0.herokuapp.com${request["slug"]}',
+          savedDir: '/storage/emulated/0/Music',
+          showNotification: true,
+          // show download progress in status bar (for Android)
+          openFileFromNotification: true,
+          // click on notification to open downloaded file (for Android)
+          saveInPublicStorage: true
+      );
+      FlutterDownloader.registerCallback(
+          callback); // callback is a top-level or static function
+    }
   }
-  }
+}

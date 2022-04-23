@@ -1,4 +1,8 @@
+import 'dart:isolate';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:spotifydownloader_flutter/widgets/CoverArt.dart';
 import 'package:spotifydownloader_flutter/widgets/IconButtomsUnderTitle.dart';
@@ -11,7 +15,11 @@ var credentials = SpotifyApiCredentials('a145db3dcd564b9592dacf10649e4ed5',
 var spotify = SpotifyApi(credentials);
 
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await FlutterDownloader.initialize(
+      debug: true // optional: set false to disable printing logs to console
+  );
   runApp(MyApp());
 }
 
@@ -224,9 +232,11 @@ class _PlaylisttState extends State<Playlistt> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     getImagePalette();
+
     return Container(
       width: 500,
       height: double.infinity,

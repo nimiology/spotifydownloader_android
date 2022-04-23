@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 
+import '../models/SongModel.dart';
+
 
 class ButtomIcons extends StatefulWidget {
   final t;
   final textFieldController;
   Function changeSpotifyLink;
+  List songs;
 
   ButtomIcons(
       this.t,
       this.textFieldController,
-      this.changeSpotifyLink);
+      this.changeSpotifyLink,
+      this.songs);
 
   @override
   State<ButtomIcons> createState() => _ButtomIconsState();
@@ -72,7 +76,12 @@ class _ButtomIconsState extends State<ButtomIcons> {
             child: Icon(
               Icons.download_sharp,
               color: Colors.green,),
-            onPressed: (){},
+            onPressed: ()async{
+              for (Map track in widget.songs){
+                print(track['title']);
+                await SongDownload(track['id']).download();
+              }
+            },
           ),
           RawMaterialButton(
             shape: CircleBorder(),

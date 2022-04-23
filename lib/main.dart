@@ -257,7 +257,8 @@ class _PlaylisttState extends State<Playlistt> {
           ButtomIcons(
             paletteGeneratorColors[0],
             _textFieldController,
-            changeSpotifyLink
+            changeSpotifyLink,
+            songs
           ),
           SongsList(songs),
         ],

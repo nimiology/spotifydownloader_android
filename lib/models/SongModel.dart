@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 
-
 class SongDownload{
   String id;
 
@@ -19,7 +18,6 @@ class SongDownload{
       url,
       path,
       onReceiveProgress: (recivedBytes, totalBytes) {
-        progress = recivedBytes / totalBytes;
       },
       deleteOnError: true,
     ).then((_) {});
@@ -38,15 +36,23 @@ class SongDownload{
     print(request);
     idRequest = request['id'];
     if (!request['isDownloaded']){print(request['isDownloaded']);}
+    print(request);
+
     while (!request['isDownloaded']) {
+      print(request);
       if (trying <= 10) {
         await Future.delayed(Duration(minutes: 1));
         http.Response requestResponse = await http.get(Uri.parse(
             'https://spotifydownloadernima0.herokuapp.com/request/${idRequest}'));
         request = json.decode(requestResponse.body);
         trying++;
+        print(trying);
+      }else{
+        break;
       }
     }
     startDownloading('https://spotifydownloadernima0.herokuapp.com${request["slug"]}', request["slug"]);
-    }
+    print('done2');
+
+  }
   }
